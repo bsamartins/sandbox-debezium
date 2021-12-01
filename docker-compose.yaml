@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  postgres:
+    image: 'postgres:14-alpine'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test-db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./conf/init.sql:/docker-entrypoint-initdb.d/1_init.sql
+      - ./conf/init.sql:/docker-entrypoint-initdb.d/2_schema.sql
+  debezium:
+    image: debezium/server:1.8
+    volumes:
+      - ./conf/application.properties:/debezium/conf/application.properties
+    depends_on:
+      - postgres
+      - kafka
+  kafka:
+    image: lensesio/fast-data-dev
+    ports:
+      - 2181:2181
+      - 3030:3030
+      - 8081-8083:8081-8083
+      - 9581-9585:9581-9585
+      - 9092:9092
+    environment:
+      - ADV_HOST=192.168.1.8
+      - RUNNING_SAMPLEDATA=0
