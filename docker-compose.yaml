@@ -9,12 +9,12 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./conf/init.sql:/docker-entrypoint-initdb.d/1_init.sql
-      - ./conf/init.sql:/docker-entrypoint-initdb.d/2_schema.sql
+      - ./conf/db/1_init.sql:/docker-entrypoint-initdb.d/1_init.sql
+      - ./conf/db/2_schema.sql:/docker-entrypoint-initdb.d/2_schema.sql
   debezium:
     image: debezium/server:1.8
     volumes:
-      - ./conf/application.properties:/debezium/conf/application.properties
+      - ./conf/debezium/application.properties:/debezium/conf/application.properties
     depends_on:
       - postgres
       - kafka
@@ -29,3 +29,5 @@ services:
     environment:
       - ADV_HOST=192.168.1.8
       - RUNNING_SAMPLEDATA=0
+    depends_on:
+      - postgres
